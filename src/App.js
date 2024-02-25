@@ -24,41 +24,61 @@ function App() {
 	async function handleTextInputChange(event){
 		setTextInput(event.target.value);
 	}
-	
+
+	async function handleDeleteButtonClick(event,tInput) {
+    		event.preventDefault();
+    		const response = await fetch("http://127.0.0.1:5000/todos", {
+      			method: "DELETE",
+      			headers: {
+        			"Content-Type": "application/json",
+      			},
+      			body: JSON.stringify(tInput),
+    		});
+    		const json = await response.json();
+    		return (json);
+  	}
+
 	async function handleAddButtonClick(event,tInput) {
     		event.preventDefault();
     		const response = await fetch("http://127.0.0.1:5000/todos", {
-      	method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      	},
-      	body: JSON.stringify(tInput),
-    	});
-    	const json = await response.json();
-    	return (json);
+      			method: "POST",
+      			headers: {
+        			"Content-Type": "application/json",
+      			},
+      			body: JSON.stringify(tInput),
+    		});
+    		const json = await response.json();
+    		return (json);
   	}
 
+	async function updateDeleteData(event,tInput) {
+	    	const data = await handleDeleteButtonClick(event,tInput);
+		setTodos(data);
+    	}
+
  	async function updatePostData(event) {
-		if (textInput == "") {
-	    	return;
+		if (textInput === "") {
+	    		return;
 		} else {
-	    	const data = await handleAddButtonClick(event,textInput);
-	    setTodos(data);
-	    setTextInput('');
+	    		const data = await handleAddButtonClick(event,textInput);
+	    		setTodos(data);
+	    		setTextInput('');
 		}
     	}
-	  	return (
+
+	return (
     	<div className="App">
       	<header className="App-header">
+		<h1>Todos</h1>
 	<input type="text" value={textInput} onChange={handleTextInputChange} 
 		placeholder="Add a new task here"/>
 
 	<button onClick={updatePostData}>Add</button>
 	  <ul>
 	  {todos.map((item)=> 
-
-		  <li key={3}>
-		  {item.task}
+		  <li key={item.id}>
+		  {item.task} 
+		  <button onClick={(event) => updateDeleteData(event,item.id)}>Del</button>
 		  </li>
 	  )}
 	  </ul>
